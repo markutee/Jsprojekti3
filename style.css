@@ -1,0 +1,124 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+}
+
+h1 {
+    text-align: center;
+    font-size: 50px;
+    text-decoration: underline;
+}
+
+.container {
+    width: 100%;
+    min-height: 100vh;
+    background: lightblue;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.todo-app {
+    width: 100%;
+    max-width: 540px;
+    background: #fff;
+    margin: 100px auto 20px;
+    padding: 40px 30px 70px;
+    border-radius: 20px;
+}
+
+.todo-app h2 {
+    color: #151d74;
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #edeef0;
+    border-radius: 40px;
+    padding-left: 15px;
+    margin-bottom: 25px;
+}
+
+input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    padding: 10px;
+}
+
+button {
+    margin-left: 50px;
+    padding: 10px 20px;
+    background-color: #2fb7a3;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 50px;
+}
+
+button:hover {
+    background-color: #094e38;
+}
+
+ul {
+    padding: 0;
+}
+
+ul li {
+    list-style: none;
+    font-size: 17px;
+    padding: 12px 8px 12px 50px;
+    user-select: none;
+    cursor: pointer;
+    position: relative;
+    display: flex;
+    justify-content: space-between; /* Align items evenly */
+    align-items: center; /* Center align vertically */
+}
+
+li span {
+    flex-grow: 1; /* Ensure the text takes available space */
+    word-wrap: break-word; /* Wrap long text */
+}
+
+ul li::before {
+    content: '';
+    position: absolute;
+    height: 28px;
+    width: 28px;
+    border-radius: 50%;
+    background-image: url(https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQK9lkE3cKzRrvj3Z391PcGWE0xiDm8EhoGQg&s);
+    background-size: cover;
+    background-position: center;
+    top: 12px;
+    left: 8px;
+}
+
+ul li.checked {
+    color: #555;
+    
+}
+
+ul li.checked::before {
+    background-image: url(https://e7.pngegg.com/pngimages/930/741/png-clipart-round-green-check-mark-illustration-check-mark-bottle-material-green-tick-miscellaneous-angle.png);
+}
+
+.completed {
+    text-decoration: line-through; /* Strikes through the task text */
+    color: rgb(0, 0, 0); /* Adjust text color if needed */
+}
+
+.error {
+    border: 2px solid red;
+    border-radius: 50px;
+    padding-left: 15px;
+}
+
+.hidden {
+    display: none;
+}
