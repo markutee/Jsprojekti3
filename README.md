@@ -2,7 +2,7 @@
 To-Do Lista sovellus Jqueryllä - Teemu Markus ja Jenni Koivisto
 
 ## Demo linkki
-Tästä linkist pääset sovellukseen[To-Do Lista])
+Tästä linkist pääset sovellukseen[To-Do Lista]https://jqueryproje.netlify.app)
 
 ## Työnjako
 Teimme projektin parityönä ja työnjako meni 50/50. Molemmat tekivät omat osuutensa, jotta ohjelmasta saataisiin toimiva Jqueryä käyttäen.
