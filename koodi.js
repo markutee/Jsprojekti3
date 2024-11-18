@@ -1,93 +1,88 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const taskInput = document.querySelector('#taskInput');  // Tehtävän syöttökenttä
-    const taskForm = document.querySelector('#taskForm');    // Lomake-elementti
-    const taskList = document.querySelector('#taskList');    // Tehtävälista
-    const error = document.querySelector('#error');          // Virheilmoitus-elementti
+$(document).ready(function () {
+    const $taskInput = $('#taskInput');   // Haetaan tehtävän syöttökenttä jQueryllä
+    const $taskForm = $('#taskForm');    // Haetaan lomake-elementti jQueryllä
+    const $taskList = $('#taskList');    // Haetaan tehtävälista jQueryllä
 
-    // Lataa tehtävät localStorage:stä
+    // Lataa tehtävät localStorage:stä ja luo ne listaan
     const savedTasks = JSON.parse(localStorage.getItem('tasks')) || [];
     savedTasks.forEach(task => createTaskElement(task.text, task.completed));
 
-    // Tapahtumakuuntelija lomakkeen lähettämiselle
-    taskForm.addEventListener('submit', function (e) {
-        e.preventDefault();  // Estää lomakkeen oletustoiminnan
-        const taskText = taskInput.value.trim();  // Hae syötetyn tekstin arvot
+    // Lomakkeen lähetyksen käsittely jQueryn .on()-metodilla
+    $taskForm.on('submit', function (e) {
+        e.preventDefault(); // Estää lomakkeen oletustoiminnan
+        const taskText = $taskInput.val().trim(); // Hakee syötekentän arvon jQueryn .val()-metodilla
 
-        // Tarkista, onko syöte tyhjää tai liian lyhyt
         if (taskText.length === 0) {
-            alert('Syöte ei voi olla tyhjää. Anna vähintään 4 merkkiä.');  // Ilmoitus tyhjistä syötteistä
-            taskInput.classList.add('error');  // Lisää virheluokka
-            return; // Lopeta toiminto
+            alert('Syöte ei voi olla tyhjää. Anna vähintään 4 merkkiä.');
+            $taskInput.addClass('error'); // Lisää virheluokan jQueryn .addClass()-metodilla
+            return;
         } else if (taskText.length <= 3) {
-            alert('Syötteen on oltava yli 3 merkkiä pitkä.');  // Ilmoitus liian lyhyistä syötteistä
-            taskInput.classList.add('error');  // Lisää virheluokka
-            return; // Lopeta toiminto
+            alert('Syötteen on oltava yli 3 merkkiä pitkä.');
+            $taskInput.addClass('error'); // Lisää virheluokan jQueryn .addClass()-metodilla
+            return;
         }
 
-        // Jos syöte on riittävän pitkä, luo uusi tehtävä
+        // Luo uusi tehtävä ja lisää se listaan
         createTaskElement(taskText);
         saveTask(taskText);
-        taskInput.value = '';  // Tyhjennä syöttökenttä
-        taskInput.classList.remove('error');  // Poista virheluokka
+        $taskInput.val('').removeClass('error'); // Tyhjentää syötekentän ja poistaa virheluokan jQueryn metodeilla
     });
 
-    // Luo uusi tehtäväelementti tehtävälistaan
+    // Luo uusi tehtäväelementti
     function createTaskElement(text, completed = false) {
-        const li = document.createElement('li');  // Luo uusi lista-elementti
-        const taskSpan = document.createElement('span');  // Luo span-elementti tehtävän tekstille
-        taskSpan.textContent = text;  // Aseta span-elementin sisältö
+        const $li = $('<li>').hide(); // Luo listaelementti jQueryn avulla ja piilottaa sen aluksi
+        const $taskSpan = $('<span>').text(text); // Luo span-elementti tehtävän tekstille jQueryllä
 
-        // Lisää 'completed'-luokka span-elementtiin ja 'checked'-luokka li-elementtiin, jos tehtävä on valmis
         if (completed) {
-            taskSpan.classList.add('completed');  // Lisää valmis-luokka span-elementtiin
-            li.classList.add('checked');           // Lisää tarkastettu-luokka li-elementtiin
+            $taskSpan.addClass('completed'); // Lisää "completed"-luokan, jos tehtävä valmis
+            $li.addClass('checked'); // Lisää "checked"-luokan
         }
 
-        // Luo 'Valmis'-painike
-        const completeButton = document.createElement('button');
-        completeButton.textContent = 'Complete';  // Aseta painikkeen teksti
-        completeButton.addEventListener('click', () => {
-            taskSpan.classList.toggle('completed');  // Vaihda 'completed'-luokan tila tehtävän tekstille
-            li.classList.toggle('checked');           // Vaihda 'checked'-luokan tila li-elementille
-            toggleTaskCompletion(text);  // Päivitä valmistumisen tila localStorage:ssä
-        });
+        // Luo "Complete"-painike ja liitä tapahtumakäsittelijä jQueryllä
+        const $completeButton = $('<button>')
+            .text('Complete')
+            .on('click', function () {
+                $taskSpan.toggleClass('completed'); // Vaihtaa "completed"-luokan jQueryn .toggleClass()-metodilla
+                $li.toggleClass('checked'); // Vaihtaa "checked"-luokan
+                toggleTaskCompletion(text); // Päivittää valmistumistilan localStorage:ssä
+            });
 
-        // Luo 'Poista'-painike
-        const deleteButton = document.createElement('button');
-        deleteButton.textContent = 'Delete';  // Aseta painikkeen teksti
-        deleteButton.addEventListener('click', () => {
-            li.remove();  // Poista tehtäväelementti listasta
-            removeTask(text);  // Poista tehtävä localStorage:stä
-        });
+        // Luo "Delete"-painike ja liitä tapahtumakäsittelijä jQueryllä
+        const $deleteButton = $('<button>')
+            .text('Delete')
+            .on('click', function () {
+                $li.fadeOut(300, function () { // Poistaa elementin jQueryn .fadeOut()-metodilla
+                    $(this).remove(); // Poistaa elementin DOMista
+                });
+                removeTask(text); // Poistaa tehtävän localStorage:stä
+            });
 
-        li.appendChild(taskSpan);  // Lisää span tehtäväelementtiin
-        li.appendChild(completeButton);  // Lisää 'Valmis'-painike tehtäväelementtiin
-        li.appendChild(deleteButton);  // Lisää 'Poista'-painike tehtäväelementtiin
-        taskList.appendChild(li);  // Lisää tehtäväelementti tehtävälistaan
+        // Lisää span, painikkeet ja näytä listaelementti jQueryn avulla
+        $li.append($taskSpan, $completeButton, $deleteButton).appendTo($taskList).fadeIn(300); // Näyttää elementin jQueryn .fadeIn()-metodilla
     }
 
-    // Tallenna uusi tehtävä localStorage:hen
+    // Tallenna tehtävä localStorage:en
     function saveTask(text) {
         const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
         tasks.push({ text, completed: false });
-        localStorage.setItem('tasks', JSON.stringify(tasks));  // Tallenna päivitykset
+        localStorage.setItem('tasks', JSON.stringify(tasks));
     }
 
     // Poista tehtävä localStorage:stä
     function removeTask(text) {
         const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
-        const updatedTasks = tasks.filter(task => task.text !== text);  // Suodata tehtävät
-        localStorage.setItem('tasks', JSON.stringify(updatedTasks));  // Tallenna päivitykset
+        const updatedTasks = tasks.filter(task => task.text !== text);
+        localStorage.setItem('tasks', JSON.stringify(updatedTasks));
     }
 
-    // Vaihda tehtävän valmistumisen tila ja päivitä localStorage
+    // Päivitä tehtävän valmistumistila
     function toggleTaskCompletion(text) {
         const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
-        const task = tasks.find(task => task.text === text);  // Etsi tehtävä
+        const task = tasks.find(task => task.text === text);
 
         if (task) {
-            task.completed = !task.completed;  // Vaihda valmistumisen tila
-            localStorage.setItem('tasks', JSON.stringify(tasks));  // Tallenna päivitykset
+            task.completed = !task.completed; // Vaihtaa valmistumistilan
+            localStorage.setItem('tasks', JSON.stringify(tasks)); // Tallentaa tilan localStorage:en
         }
     }
 });
